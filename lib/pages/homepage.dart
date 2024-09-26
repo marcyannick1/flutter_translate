@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_translate/pages/translate.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -96,6 +97,11 @@ class _HomepageState extends State<Homepage> {
                 ElevatedButton(
                   onPressed: () {
                     // Action du bouton
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const TranslatePage()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.redAccent,
