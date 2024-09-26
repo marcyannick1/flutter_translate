@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_translate/pages/translate.dart';
+import 'package:flutter_translate/pages/homepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,8 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TranslatePage(),
-
+      home: const Homepage()
     );
   }
 }
