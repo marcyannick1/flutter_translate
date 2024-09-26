@@ -184,6 +184,10 @@ class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin
                     ElevatedButton(
                       onPressed: () {
                         // Action du bouton pour naviguer vers la page translate
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const TranslatePage()),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent, // Changement de couleur du bouton
