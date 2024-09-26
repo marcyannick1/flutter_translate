@@ -10,17 +10,46 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
   bool isTranslate = true;
 
   @override
   void initState() {
     super.initState();
-    // Change le texte après 5 secondes
-    Future.delayed(Duration(seconds: 5), () {
+
+    // Animation Controller pour gérer la transition
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1), // Durée de la transition
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    // Boucle de changement de texte toutes les 5 secondes
+    _startTextChange();
+  }
+
+  void _startTextChange() {
+    Future.doWhile(() async {
+      await Future.delayed(Duration(seconds: 8)); // Délai avant de changer
       setState(() {
-        isTranslate = false; // Change l'état pour afficher "correction"
+        isTranslate = !isTranslate; // Alterner entre Translate et Correction
       });
+      _controller.forward(from: 0.0); // Réinitialiser l'animation
+      return true; // Continue la boucle
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,78 +70,46 @@ class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin
                     children: [
                       AnimatedSwitcher(
                         duration: const Duration(seconds: 1),
-                        child: isTranslate
-                            ? Column(
-                          key: ValueKey<bool>(isTranslate),
-                          children: [
-                            Icon(
-                              Icons.translate, // Icône de traduction
-                              size: 50, // Taille de l'icône
-                              color: Colors.white, // Couleur de l'icône
-                            ),
-                            AnimatedTextKit(
-                              animatedTexts: [
-                                ColorizeAnimatedText(
-                                  'Translate',
-                                  textStyle: TextStyle(
-                                    fontSize: 50.0,
-                                    fontFamily: 'Roboto',
-                                    fontWeight: FontWeight.bold,
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.black54,
-                                        offset: Offset(2.0, 2.0),
-                                        blurRadius: 8.0,
-                                      ),
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Column(
+                            key: ValueKey<bool>(isTranslate),
+                            children: [
+                              Icon(
+                                isTranslate
+                                    ? Icons.translate
+                                    : Icons.assignment_turned_in, // Icône de traduction ou de correction
+                                size: 50, // Taille de l'icône
+                                color: Colors.white, // Couleur de l'icône
+                              ),
+                              AnimatedTextKit(
+                                animatedTexts: [
+                                  ColorizeAnimatedText(
+                                    isTranslate ? 'Translate' : 'Correction',
+                                    textStyle: TextStyle(
+                                      fontSize: 50.0,
+                                      fontFamily: 'Roboto',
+                                      fontWeight: FontWeight.bold,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black54,
+                                          offset: Offset(2.0, 2.0),
+                                          blurRadius: 8.0,
+                                        ),
+                                      ],
+                                    ),
+                                    colors: [
+                                      Colors.white,
+                                      Colors.blue,
+                                      Colors.yellow,
+                                      Colors.red,
                                     ],
                                   ),
-                                  colors: [
-                                    Colors.white,
-                                    Colors.blue,
-                                    Colors.yellow,
-                                    Colors.red,
-                                  ],
-                                ),
-                              ],
-                              isRepeatingAnimation: true,
-                            ),
-                          ],
-                        )
-                            : Column(
-                          key: ValueKey<bool>(!isTranslate),
-                          children: [
-                            Icon(
-                              Icons.assignment_turned_in, // Icône de correction
-                              size: 50, // Taille de l'icône
-                              color: Colors.white, // Couleur de l'icône
-                            ),
-                            AnimatedTextKit(
-                              animatedTexts: [
-                                ColorizeAnimatedText(
-                                  'Correction',
-                                  textStyle: TextStyle(
-                                    fontSize: 50.0,
-                                    fontFamily: 'Roboto',
-                                    fontWeight: FontWeight.bold,
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.black54,
-                                        offset: Offset(2.0, 2.0),
-                                        blurRadius: 8.0,
-                                      ),
-                                    ],
-                                  ),
-                                  colors: [
-                                    Colors.white,
-                                    Colors.blue,
-                                    Colors.yellow,
-                                    Colors.red,
-                                  ],
-                                ),
-                              ],
-                              isRepeatingAnimation: true,
-                            ),
-                          ],
+                                ],
+                                isRepeatingAnimation: true,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -191,7 +188,7 @@ class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent, // Changement de couleur du bouton
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
+                          horizontal: 62,
                           vertical: 12,
                         ),
                         shape: RoundedRectangleBorder(
