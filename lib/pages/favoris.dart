@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/pages/homepage.dart';
 import 'package:intl/intl.dart';
+import 'navbar.dart'; // Assurez-vous d'importer votre fichier navbar.dart ici
 
 class FavorisPage extends StatefulWidget {
   const FavorisPage({Key? key}) : super(key: key);
@@ -9,26 +11,13 @@ class FavorisPage extends StatefulWidget {
 }
 
 class _FavorisPageState extends State<FavorisPage> with SingleTickerProviderStateMixin {
-  int _currentIndex = 1; // L'onglet Favoris est actif par défaut
-  late AnimationController _controller;
+  int _currentIndex = 0; // L'onglet Favoris est actif par défaut
 
   final List<IconData> _icons = [
     Icons.star, // Favoris
     Icons.home, // Home
     Icons.refresh, // Reload
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -37,7 +26,7 @@ class _FavorisPageState extends State<FavorisPage> with SingleTickerProviderStat
     if (index == 0) {
       // Reste sur la page Favoris
     } else if (index == 1) {
-      Navigator.pushNamed(context, '/home'); // Naviguer vers la page d'accueil
+      Navigator.pushReplacementNamed(context, '/home'); // Naviguer vers la page d'accueil
     } else if (index == 2) {
       // Recharge la page actuelle
       Navigator.pushReplacement(
@@ -107,76 +96,9 @@ class _FavorisPageState extends State<FavorisPage> with SingleTickerProviderStat
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        height: 90,
-        decoration: const BoxDecoration(
-          color: Colors.white,  // Couleur de fond changée en blanc
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black38,
-              blurRadius: 10,
-              offset: Offset(0, -3),
-            ),
-          ],
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Espace égal entre les icônes
-          children: [
-            // Icône Favoris à gauche
-            GestureDetector(
-              onTap: () => _onItemTapped(0),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  color: _currentIndex == 0 ? Colors.blue[800] : Colors.transparent, // Couleur principale
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.star,
-                  size: 28, // Taille légèrement augmentée
-                  color: _currentIndex == 0 ? Colors.white : Colors.grey[400],
-                ),
-              ),
-            ),
-            // Icône Home au centre
-            GestureDetector(
-              onTap: () => _onItemTapped(1),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  color: _currentIndex == 1 ? Colors.blue[800] : Colors.transparent, // Couleur principale
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(10.0), // Ajout d'un padding pour créer l'effet bulle
-                child: Icon(
-                  Icons.home,
-                  size: 32, // Taille légèrement augmentée
-                  color: _currentIndex == 1 ? Colors.white : Colors.grey[400],
-                ),
-              ),
-            ),
-            // Icône Reload à droite
-            GestureDetector(
-              onTap: () => _onItemTapped(2),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  color: _currentIndex == 2 ? Colors.blue[800] : Colors.transparent, // Couleur principale
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.refresh,
-                  size: 28, // Taille légèrement augmentée
-                  color: _currentIndex == 2 ? Colors.white : Colors.grey[400],
-                ),
-              ),
-            ),
-          ],
-        ),
+      bottomNavigationBar: CustomBottomNavBar( // Intégration du CustomBottomNavBar
+        selectedIndex: _currentIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
@@ -301,5 +223,8 @@ class FavoriteCard extends StatelessWidget {
 void main() {
   runApp(MaterialApp(
     home: FavorisPage(),
+    routes: {
+      '/': (context) => Homepage(), // Ajoutez votre page d'accueil ici
+    },
   ));
 }

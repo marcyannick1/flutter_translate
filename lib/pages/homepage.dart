@@ -37,7 +37,7 @@ class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin
 
   void _startTextChange() {
     Future.doWhile(() async {
-      await Future.delayed(Duration(seconds: 8)); // Délai avant de changer
+      await Future.delayed(Duration(seconds: 5)); // Délai avant de changer
       setState(() {
         isTranslate = !isTranslate; // Alterner entre Translate et Correction
       });

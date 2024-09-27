@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'navbar.dart'; // Assurez-vous que CustomBottomNavBar est bien importé
 
 class TranslatePage extends StatefulWidget {
   const TranslatePage({super.key});
@@ -23,10 +24,7 @@ class _PageTraductionState extends State<TranslatePage> {
 
   // Modes disponibles
   final List<String> modes = ['Traduction', 'Correction'];
-  List<bool> isSelected = [
-    true,
-    false
-  ]; // Par défaut, le mode Traduction est activé.
+  List<bool> isSelected = [true, false]; // Par défaut, le mode Traduction est activé.
 
   // Index actuel de la page pour la Bottom Navigation Bar
   int _selectedIndex = 0;
@@ -35,8 +33,8 @@ class _PageTraductionState extends State<TranslatePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      // Ici, vous pouvez ajouter la logique pour changer de page ou effectuer d'autres actions selon l'index
     });
+    // Vous pouvez naviguer vers d'autres pages ici si nécessaire
   }
 
   @override
@@ -44,16 +42,16 @@ class _PageTraductionState extends State<TranslatePage> {
     return Scaffold(
       backgroundColor: Colors.blue[800], // Couleur de fond principale
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start, // Change à start pour remonter le contenu
         children: <Widget>[
-          // Barre supérieure avec le texte "translate" et l'icône des paramètres
+          // Barre supérieure avec le texte "Translate" et l'icône des paramètres
           Padding(
-            padding: const EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(37.0), // Réduit le padding
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 const Text(
-                  "translate",
+                  "Translate",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -61,260 +59,267 @@ class _PageTraductionState extends State<TranslatePage> {
                     fontFamily: "Roboto",
                   ),
                 ),
-                IconButton.filled(
-                  icon: const Icon(Icons.settings),
-                  color: Colors.red,
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.white,
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white, // Couleur de fond blanche
+                    shape: BoxShape.circle, // Forme circulaire
                   ),
-                  onPressed: () {
-                    // Code pour ouvrir les paramètres
-                  },
+                  child: IconButton(
+                    icon: const Icon(Icons.settings),
+                    color: Colors.redAccent, // Change la couleur ici
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                    ),
+                    onPressed: () {
+                      // Code pour ouvrir les paramètres
+                    },
+                  ),
                 ),
               ],
             ),
           ),
-          Column(
-            children: [
-              // Affichage des menus déroulants uniquement si le mode "Traduction" est actif
-              if (isSelected[0]) // Vérifie si le mode "Traduction" est actif
+          // Colonne pour les éléments du contenu
+          Expanded( // Utilise Expanded pour prendre l'espace restant
+            child: Column(
+              children: [
+                // Affichage des menus déroulants uniquement si le mode "Traduction" est actif
+                if (isSelected[0]) // Vérifie si le mode "Traduction" est actif
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0), // Réduit le padding
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20), // Réduit les coins arrondis
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(0, 4), // décalage de l'ombre
+                            blurRadius: 8, // flou de l'ombre
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 29), // Réduit le padding
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Menu déroulant pour la langue d'entrée
+                          DropdownButton<String>(
+                            value: selectedInputLanguage,
+                            icon: const Icon(Icons.arrow_drop_down),
+                            iconSize: 24,
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.black, fontSize: 16), // Réduit la taille de la police
+                            underline: Container(
+                              height: 2,
+                              color: Colors.transparent,
+                            ),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedInputLanguage = newValue!;
+                              });
+                            },
+                            items: languages
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                          // Icône de flèche pour échanger les langues
+                          IconButton(
+                            icon: const Icon(Icons.swap_horiz, color: Colors.red),
+
+                            // Réduit la taille de la police
+                            onPressed: () {
+                              setState(() {
+                                // Inverser les langues sélectionnées
+                                String temp = selectedInputLanguage;
+                                selectedInputLanguage = selectedOutputLanguage;
+                                selectedOutputLanguage = temp;
+                              });
+                            },
+                          ),
+                          // Menu déroulant pour la langue de sortie
+                          DropdownButton<String>(
+                            value: selectedOutputLanguage,
+                            icon: const Icon(Icons.arrow_drop_down),
+                            iconSize: 24,
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.black, fontSize: 16), // Réduit la taille de la police
+                            underline: Container(
+                              height: 2,
+                              color: Colors.transparent,
+                            ),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedOutputLanguage = newValue!;
+                              });
+                            },
+                            items: languages
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 30), // Réduit l'espacement
+
+                // Bande de sélection du mode Traduction ou Correction avec ombre
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0), // Réduit le padding
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white, // Réduit les coins arrondis
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 4), // décalage de l'ombre
+                          blurRadius: 8, // flou de l'ombre
+                        ),
+                      ],
+                    ),
+                    child: ToggleButtons(
+                      borderRadius: BorderRadius.circular(15), // Réduit les coins arrondis
+                      selectedColor: Colors.white,
+                      selectedBorderColor: Colors.redAccent,
+                      fillColor: Colors.redAccent,
                       color: Colors.white,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Menu déroulant pour la langue d'entrée
-                        DropdownButton<String>(
-                          value: selectedInputLanguage,
-                          icon: const Icon(Icons.arrow_drop_down),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 18),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.transparent,
+                      borderColor: Colors.redAccent,
+                      isSelected: isSelected,
+                      onPressed: (int index) {
+                        setState(() {
+                          for (int i = 0; i < isSelected.length; i++) {
+                            isSelected[i] = i == index;
+                          }
+                        });
+                      },
+                      children: modes.map((String mode) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0), // Réduit le padding
+                          child: Text(
+                            mode,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isSelected[modes.indexOf(mode)]
+                                  ? Colors.white // Couleur blanche si sélectionné
+                                  : (mode == 'Traduction' ? Colors.redAccent : Colors.redAccent), // Rouge pour 'Traduction' non sélectionné et blanc pour 'Correction'
+                            ),
                           ),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedInputLanguage = newValue!;
-                            });
-                          },
-                          items: languages
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                        // Icône de flèche pour échanger les langues
-                        IconButton(
-                          icon: const Icon(Icons.swap_horiz, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              // Inverser les langues sélectionnées
-                              String temp = selectedInputLanguage;
-                              selectedInputLanguage = selectedOutputLanguage;
-                              selectedOutputLanguage = temp;
-                            });
-                          },
-                        ),
-                        // Menu déroulant pour la langue de sortie
-                        DropdownButton<String>(
-                          value: selectedOutputLanguage,
-                          icon: const Icon(Icons.arrow_drop_down),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 18),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.transparent,
-                          ),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedOutputLanguage = newValue!;
-                            });
-                          },
-                          items: languages
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                      ],
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 30), // Réduit l'espacement
 
-              // ToggleButton pour la sélection du mode Traduction ou Correction
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: ToggleButtons(
-                  borderRadius: BorderRadius.circular(20),
-                  selectedColor: Colors.white,
-                  selectedBorderColor: Colors.redAccent,
-                  fillColor: Colors.redAccent,
-                  color: Colors.white,
-                  borderColor: Colors.redAccent,
-                  isSelected: isSelected,
-                  onPressed: (int index) {
-                    setState(() {
-                      for (int i = 0; i < isSelected.length; i++) {
-                        isSelected[i] = i == index;
-                      }
-                    });
-                  },
-                  children: modes.map((String mode) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                      child: Text(
-                        mode,
-                        style: const TextStyle(fontSize: 16),
+                // Conteneur avec les champs de texte et les boutons d'action
+                Expanded(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
                       ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Conteneur avec les champs de texte et les boutons d'action
-              Container(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40.0),
-                    topRight: Radius.circular(40.0),
-                  ),
-                  color: Color(0xFFefefef), // Couleur de fond blanche en bas
-                ),
-                padding: EdgeInsets.only(bottom: 30),
-                child: Column(
-                  children: [
-                    Stack(
+                      color: Colors.white, // Couleur de fond blanche en bas
+                    ),
+                    padding: EdgeInsets.only(bottom: 20), // Réduit le padding
+                    child: Column(
                       children: [
-                        // Champ de texte pour l'entrée
+                        // Champ de texte pour l'entrée avec icônes
                         Padding(
-                          padding: const EdgeInsets.all(0.0),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(40.0),
-                              ),
-                              filled: true,
-                              fillColor: Colors.redAccent,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 50.0, horizontal: 20.0),
-                              hintText: isSelected[0]
-                                  ? 'Entrez du texte à traduire'
-                                  : 'Entrez du texte à corriger',
-                              // Change le hintText selon le mode
-                              hintStyle:
-                                  TextStyle(color: Colors.redAccent[100]),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0), // Réduit le padding
+                          child: Container(
+                            width: double.infinity, // Prend toute la largeur disponible
+                            height: 80, // Augmente la hauteur
+                            decoration: BoxDecoration(
+                              color: Colors.redAccent,
+                              borderRadius: BorderRadius.circular(30.0), // Coins arrondis
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10.0, // Flou de l'ombre
+                                  offset: Offset(0, 5), // Décalage de l'ombre
+                                ),
+                              ],
                             ),
-                            maxLines: 6,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
+                            child: TextField(
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Entrez du texte à traduire',
+                                hintStyle: TextStyle(color: Colors.white70),
+                                prefixIcon: const Icon(
+                                  Icons.star, // Icône d'étoile
+                                  color: Colors.white,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: const Icon(
+                                    Icons.send, // Icône d'envoi
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    // Logique pour envoyer le texte
+                                  },
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0), // Réduit le padding
+                              ),
+                              style: const TextStyle(color: Colors.white), // Texte blanc
                             ),
                           ),
                         ),
-                        // Boutons d'action flottants (étoile et envoyer)
-                        Positioned(
-                          bottom: 30,
-                          right: 30,
-                          child: Column(
-                            children: [
-                              IconButton.filled(
-                                icon: const Icon(Icons.star_outline),
-                                iconSize: 25,
-                                padding: const EdgeInsets.all(10),
-                                color: Colors.white,
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
+                        const SizedBox(height: 20), // Réduit l'espacement
+
+                        // Champ de texte pour la sortie avec icônes
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0), // Réduit le padding
+                          child: Container(
+                            width: double.infinity, // Prend toute la largeur disponible
+                            height: 80, // Augmente la hauteur
+                            decoration: BoxDecoration(
+                              color: Colors.blue[400], // Change la couleur pour le champ de sortie
+                              borderRadius: BorderRadius.circular(30.0), // Coins arrondis
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10.0, // Flou de l'ombre
+                                  offset: Offset(0, 5), // Décalage de l'ombre
                                 ),
-                                onPressed: () {
-                                  // Code pour ajouter à favoris
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              IconButton.filled(
-                                icon: const Icon(Icons.send_rounded),
-                                iconSize: 25,
-                                padding: const EdgeInsets.all(10),
-                                color: Colors.redAccent,
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.white,
+                              ],
+                            ),
+                            child: TextField(
+                              readOnly: true, // Champ en lecture seule
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Résultat ici',
+                                hintStyle: TextStyle(color: Colors.white70),
+                                prefixIcon: const Icon(
+                                  Icons.done, // Icône de résultat
+                                  color: Colors.white,
                                 ),
-                                onPressed: () {
-                                  // Code pour envoyer la traduction ou correction
-                                },
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0), // Réduit le padding
                               ),
-                            ],
+                              style: const TextStyle(color: Colors.white), // Texte blanc
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    // Champ de texte pour l'affichage de la traduction ou correction
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.circular(40.0),
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 50.0, horizontal: 20.0),
-                        ),
-                        maxLines: 6,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
-      // Ajout de la BottomNavigationBar
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.translate),
-            label: 'Traduction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check),
-            label: 'Correction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favoris',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.redAccent,
-        onTap: _onItemTapped,
+      bottomNavigationBar: CustomBottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
