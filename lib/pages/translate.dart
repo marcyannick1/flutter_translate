@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/services/groq.dart';
 
 class TranslatePage extends StatefulWidget {
   const TranslatePage({super.key});
 
   @override
-  _PageTraductionState createState() => _PageTraductionState();
+  _TranslatePageState createState() => _TranslatePageState();
 }
 
-class _PageTraductionState extends State<TranslatePage> {
+class _TranslatePageState extends State<TranslatePage> {
   // Les langues disponibles
   final List<String> languages = [
     'English',
@@ -28,16 +29,8 @@ class _PageTraductionState extends State<TranslatePage> {
     false
   ]; // Par défaut, le mode Traduction est activé.
 
-  // Index actuel de la page pour la Bottom Navigation Bar
-  int _selectedIndex = 0;
-
-  // Fonction pour mettre à jour l'index lorsqu'on clique sur un item de la barre de navigation
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // Ici, vous pouvez ajouter la logique pour changer de page ou effectuer d'autres actions selon l'index
-    });
-  }
+  final TextEditingController _inputController = TextEditingController();
+  final TextEditingController _outputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -207,6 +200,7 @@ class _PageTraductionState extends State<TranslatePage> {
                         Padding(
                           padding: const EdgeInsets.all(0.0),
                           child: TextField(
+                            controller: _inputController,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
@@ -223,7 +217,7 @@ class _PageTraductionState extends State<TranslatePage> {
                               hintStyle:
                                   TextStyle(color: Colors.redAccent[100]),
                             ),
-                            maxLines: 6,
+                            maxLines: 4,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18.0,
@@ -259,7 +253,11 @@ class _PageTraductionState extends State<TranslatePage> {
                                   backgroundColor: Colors.white,
                                 ),
                                 onPressed: () {
-                                  // Code pour envoyer la traduction ou correction
+                                    if (_inputController.text.isNotEmpty) {
+                                      setState(() async {
+                                        _outputController.text = await GroqService().sendMessage(_inputController.text, isSelected[0] ? "translate" : "correction", isSelected[0] ? selectedOutputLanguage : "");
+                                      });
+                                    }
                                 },
                               ),
                             ],
@@ -269,8 +267,10 @@ class _PageTraductionState extends State<TranslatePage> {
                     ),
                     // Champ de texte pour l'affichage de la traduction ou correction
                     Padding(
-                      padding: const EdgeInsets.all(0.0),
+                      padding: const EdgeInsets.all(5.0),
                       child: TextField(
+                        controller: _outputController,
+                        readOnly: true,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
@@ -281,7 +281,7 @@ class _PageTraductionState extends State<TranslatePage> {
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 50.0, horizontal: 20.0),
                         ),
-                        maxLines: 6,
+                        maxLines: 4,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 18.0,
@@ -294,27 +294,6 @@ class _PageTraductionState extends State<TranslatePage> {
             ],
           ),
         ],
-      ),
-      // Ajout de la BottomNavigationBar
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.translate),
-            label: 'Traduction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check),
-            label: 'Correction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favoris',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.redAccent,
-        onTap: _onItemTapped,
       ),
     );
   }
