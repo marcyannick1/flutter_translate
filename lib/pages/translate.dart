@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'navbar.dart'; // Assurez-vous que CustomBottomNavBar est bien importé
 
 class TranslatePage extends StatefulWidget {
@@ -264,6 +265,7 @@ class _PageTraductionState extends State<TranslatePage> {
                                     color: Colors.white,
                                   ),
                                   onPressed: () {
+
                                     // Logique pour envoyer le texte
                                   },
                                 ),
